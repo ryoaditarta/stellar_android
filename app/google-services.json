@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "308124772913",
+    "project_id": "stellar-android-a8067",
+    "storage_bucket": "stellar-android-a8067.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308124772913:android:9613dda631a788e38c0310",
+        "android_client_info": {
+          "package_name": "com.example.stellar_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsXyizJokh_bJ8YNZ3s8Zs4KgOven0404"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
