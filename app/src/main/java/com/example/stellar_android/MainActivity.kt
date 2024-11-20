@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
             Stellar_AndroidTheme {
                 // Set Scaffold background color to white
                 Scaffold(
-                    containerColor = Color.White,
+                    containerColor = Color.Black,
                     modifier = Modifier.background(Color.White)
                 ) { innerPadding -> null
                     StellarNavigation(modifier = Modifier
