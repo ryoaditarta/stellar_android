@@ -7,33 +7,57 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.example.stellar_android.navigation.StellarNavigation
 import com.example.stellar_android.ui.theme.Stellar_AndroidTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Atur status bar dan navigation bar untuk fullscreen
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        hideSystemBars()
+
         setContent {
             Stellar_AndroidTheme {
-                // Set Scaffold background color to white
                 Scaffold(
                     containerColor = Color.Black,
-                    modifier = Modifier.background(Color.White)
-                ) { innerPadding -> null
-                    StellarNavigation(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
+                    modifier = Modifier.background(Color.Black) // Background hitam untuk konsistensi
+                ) { innerPadding ->
+                    StellarNavigation(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
                     )
                 }
             }
         }
     }
+
+    private fun hideSystemBars() {
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+
+        // Periksa apakah versi Android mendukung API terbaru
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            insetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            insetsController.hide(
+                android.view.WindowInsets.Type.systemBars()
+            )
+        } else {
+            // Gunakan metode lama untuk API di bawah 30
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                    android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+                            or android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    )
+        }
+    }
+
 }

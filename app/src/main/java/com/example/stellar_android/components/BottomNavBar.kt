@@ -50,7 +50,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
             .fillMaxWidth()
             .height(80.dp)
             .background(Color(0xFF101010))
-            .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
+            .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
     ) {
         NavigationBar(
             modifier = Modifier
