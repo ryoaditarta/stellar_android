@@ -84,7 +84,7 @@ fun journalPage(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF191919)),
+                    .background(Color.Black),
                 contentAlignment = Alignment.Center
             ) {
                 Column(

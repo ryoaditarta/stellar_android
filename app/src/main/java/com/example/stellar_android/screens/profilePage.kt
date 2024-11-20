@@ -68,11 +68,11 @@ fun profilePage(navController: NavController) {
         bottomBar = {
             BottomNavBar(navController = navController, currentRoute = "profilePage")
         }
-    ) { innerPadding ->
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(bottom = it.calculateBottomPadding())
                 .background(Color.Black),
             contentAlignment = Alignment.Center // Card di tengah layar
         ) {

@@ -24,43 +24,45 @@ fun snapsPage(
     Scaffold(
         bottomBar = {
             BottomNavBar(navController = navController, currentRoute = "snapsPage")
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color.Black),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                // Header Text
-                Text(
-                    text = "Snaps",
-                    color = Color.White,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Text(
-                    text = "Photo that represent your day",
-                    color = Color.White,
-                    modifier = Modifier.padding(bottom = 32.dp)
-                )
+        }, content =
+            {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = it.calculateBottomPadding())
+                        .background(Color.Black),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        // Header Text
+                        Text(
+                            text = "Snaps",
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        Text(
+                            text = "Photo that represent your day",
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 32.dp)
+                        )
 
-                // Display all images stored in bitmapList
-                bitmapList.forEach { bitmap ->
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = "Snap Image",
-                        modifier = Modifier
-                            .size(200.dp)
-                            .padding(16.dp)
-                    )
+                        // Display all images stored in bitmapList
+                        bitmapList.forEach { bitmap ->
+                            Image(
+                                bitmap = bitmap.asImageBitmap(),
+                                contentDescription = "Snap Image",
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .padding(16.dp)
+                            )
+                        }
+                    }
                 }
             }
-        }
-    }
+
+    )
 }
