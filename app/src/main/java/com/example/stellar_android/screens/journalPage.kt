@@ -36,7 +36,7 @@ fun journalPage(navController: NavController) {
     val journals = remember { mutableStateListOf<Map<String, Any>>() }
     val filteredJournals = remember { mutableStateListOf<Map<String, Any>>() } // New list for filtered data
     val errorMessage = remember { mutableStateOf<String?>(null) }
-    val selectedDate = remember { mutableStateOf("Today") }
+    val selectedDate = remember { mutableStateOf("All Journal") }
     val context = LocalContext.current
 
     // Calendar instance for date picker

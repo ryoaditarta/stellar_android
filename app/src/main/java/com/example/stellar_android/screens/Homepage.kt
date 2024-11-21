@@ -193,7 +193,7 @@ fun FetchAllJournals(userId: String, navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .heightIn(max = 150.dp) // Limit the height of the LazyColumn (adjust as necessary)
+                .heightIn(max = 200.dp) // Limit the height of the LazyColumn (adjust as necessary)
         ) {
             items(journals.value.take(3)) { journal ->
                 JournalItem(journal = journal, navController = navController)

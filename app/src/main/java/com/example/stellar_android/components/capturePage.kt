@@ -34,7 +34,7 @@ fun capturePage(
         uri?.let {
             val bitmap = loadBitmapFromUri(context, it)
             bitmap?.let { newBitmap ->
-                bitmapList.add(newBitmap)  // Add the bitmap to the shared list
+                bitmapList.add(newBitmap)
             }
         }
     }

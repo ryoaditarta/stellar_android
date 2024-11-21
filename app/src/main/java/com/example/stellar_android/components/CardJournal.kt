@@ -14,7 +14,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FormatQuote
+import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -32,7 +41,7 @@ fun CardJournal(
 
     Box(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(5.dp)
             .background(Color(0xff2D2D2D), shape = RoundedCornerShape(8.dp))
             .clickable {
                 // Navigate to the JournalDetail screen, passing the journalId as a parameter
@@ -41,24 +50,37 @@ fun CardJournal(
             .heightIn(min = 150.dp, max = 200.dp) // Set fixed min and max height
             .fillMaxWidth() // Ensure it fills the width equally
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Title with a max of one line and truncating overflow
+        // Quote Icon positioned in the top-right corner
+        Icon(
+            imageVector = Icons.Filled.FormatQuote, // Using the built-in quote icon
+            contentDescription = "Quote Icon",
+            modifier = Modifier
+                .size(60.dp) // Icon size
+                .align(Alignment.TopEnd) // Align to the top-right corner
+                .padding(15.dp), // Add padding from the corner
+            tint = Color(0xFFFFFFFF)
+        )
+
+        Column(modifier = Modifier.padding(start = 16.dp, bottom = 28.dp, top = 16.dp, end = 45.dp).align(Alignment.BottomStart)) {
             Text(
                 text = title,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 8.dp),
+                fontSize = 24.sp, // Larger font for the title
+                modifier = Modifier.padding(bottom = 10.dp),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold
             )
-            // Content with a max of 3 lines and truncating overflow
             Text(
                 text = content,
                 color = Color.White,
+                fontSize = 16.sp, // Smaller font for the content
                 modifier = Modifier.padding(bottom = 8.dp),
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
         }
+
         // Date in the bottom-right corner
         Text(
             text = formattedDate, // Use formatted date
@@ -70,6 +92,7 @@ fun CardJournal(
             overflow = TextOverflow.Ellipsis
         )
     }
+
 }
 fun formatDate(dateString: String): String {
     val parts = dateString.split(" ")

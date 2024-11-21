@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
@@ -22,61 +23,78 @@ import java.text.SimpleDateFormat
 import java.util.*
 import com.google.firebase.firestore.FirebaseFirestore
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
 @Composable
 fun JournalDetail(
     navController: NavController,
-    journalId: String, // The journalId passed to the screen
+    journalId: String,
     title: String,
     content: String,
     created_at: String,
     updated_at: String,
 ) {
-    // State untuk menyimpan mode edit dan data yang diubah
     var isEdit by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) } // State untuk dialog konfirmasi
     var editableTitle by remember { mutableStateOf(TextFieldValue(title)) }
     var editableContent by remember { mutableStateOf(TextFieldValue(content)) }
     var editableUpdatedAt by remember { mutableStateOf(updated_at) }
 
-    // Fungsi untuk mendapatkan waktu saat ini dalam format yang diinginkan
-    fun getCurrentDateTime(): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return sdf.format(Date())
-    }
-
-    // Fungsi untuk mengubah status dan menyimpan data
     fun saveChanges() {
         val db = FirebaseFirestore.getInstance()
-
-        // Create the updated data map
         val updatedData = hashMapOf<String, Any>(
             "title" to editableTitle.text,
             "content" to editableContent.text,
-            "updated_at" to getCurrentDateTime() // Update the time of modification
+            "updated_at" to getCurrentDate()
         )
-
-        // Query Firestore to find the document with the matching journalId
         db.collection("journal")
-            .whereEqualTo("journal_id", journalId) // Query by the journalId field
+            .whereEqualTo("journal_id", journalId)
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     println("No journal found with the given journalId")
                 } else {
-                    // If journal found, update the document
-                    val document = documents.first() // Since journalId is unique, we take the first document
+                    val document = documents.first()
                     document.reference.update(updatedData)
                         .addOnSuccessListener {
-                            // After successful update, navigate back to the journal page
                             navController.navigate("journalPage")
                         }
                         .addOnFailureListener { e ->
-                            // Handle the failure
                             println("Error updating document: $e")
                         }
                 }
             }
             .addOnFailureListener { e ->
-                // Handle failure to find document
+                println("Error querying document: $e")
+            }
+    }
+
+    fun deleteJournal() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("journal")
+            .whereEqualTo("journal_id", journalId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    println("No journal found with the given journalId")
+                } else {
+                    val document = documents.first()
+                    document.reference.delete()
+                        .addOnSuccessListener {
+                            navController.navigate("journalPage")
+                        }
+                        .addOnFailureListener { e ->
+                            println("Error deleting document: $e")
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
                 println("Error querying document: $e")
             }
     }
@@ -87,7 +105,6 @@ fun JournalDetail(
             .background(Color.Black)
             .padding(16.dp)
     ) {
-        // Tombol kembali di bagian atas
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -97,31 +114,45 @@ fun JournalDetail(
             IconButton(onClick = { navController.navigate("journalPage") }) {
                 Icon(imageVector = Icons.Outlined.ArrowBackIosNew, contentDescription = "Back", tint = Color.White)
             }
-            if (isEdit) {
-                // Tombol untuk menyimpan perubahan
+            Row(
+                modifier = Modifier
+                    .padding(8.dp), // Tambahkan sedikit padding agar lebih rapi
+                verticalAlignment = Alignment.CenterVertically // Sejajarkan elemen secara vertikal
+            ) {
+                IconButton(onClick = { showDeleteConfirmation = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp)) // Tambahkan jarak horizontal antara ikon dan teks
                 Text(
-                    text = "Save",
+                    text = if (isEdit) "Save" else "Edit",
                     color = Color.White,
-                    modifier = Modifier.clickable { saveChanges() }
-                )
-            } else {
-                // Tombol untuk mengubah mode ke edit
-                Text(
-                    text = "Edit",
-                    color = Color.White,
-                    modifier = Modifier.clickable { isEdit = true }
+                    modifier = Modifier
+                        .clickable {
+                            if (isEdit) saveChanges() else isEdit = true
+                        }
+                        .padding(horizontal = 8.dp, vertical = 4.dp) // Padding untuk teks
                 )
             }
+
         }
 
-        // Judul dengan input jika dalam mode edit
         if (isEdit) {
             TextField(
                 value = editableTitle,
                 onValueChange = { editableTitle = it },
-                label = { Text("Title") },
-                modifier = Modifier.padding(bottom = 8.dp).background(Color.Black),
-                textStyle = MaterialTheme.typography.titleLarge.copy(color = Color.White)
+                label = { Text(color = Color(0xFFB286FD), text = "Title", fontWeight = FontWeight.Bold, fontSize = 15.sp)},
+                modifier = Modifier
+                    .padding(bottom = 8.dp),
+                textStyle = MaterialTheme.typography.titleLarge.copy(color = Color.White),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color(0xFF2D2D2D),
+                    focusedContainerColor = Color(0xFF2D2D2D),
+                    cursorColor = Color(0xFFB286FD),
+                )
             )
         } else {
             Text(
@@ -131,14 +162,21 @@ fun JournalDetail(
             )
         }
 
-        // Konten dengan input jika dalam mode edit
+        Spacer(modifier = Modifier.height(20.dp))
+
+
         if (isEdit) {
             TextField(
                 value = editableContent,
                 onValueChange = { editableContent = it },
-                label = { Text("Content") },
+                label = { Text(color = Color(0xFFB286FD),text = "Content", fontWeight = FontWeight.Bold, fontSize = 15.sp) },
                 modifier = Modifier.padding(bottom = 16.dp).background(Color.Black),
-                textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color(0xFF2D2D2D),
+                    focusedContainerColor = Color(0xFF2D2D2D),
+                    cursorColor = Color(0xFFB286FD),
+                )
             )
         } else {
             Text(
@@ -148,8 +186,7 @@ fun JournalDetail(
             )
         }
 
-        // Tanggal di pojok kanan bawah
-        Spacer(modifier = Modifier.weight(1f)) // Menjaga tanggal di bawah
+        Spacer(modifier = Modifier.weight(1f))
         Text(
             text = "Created At: $created_at",
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
@@ -161,4 +198,31 @@ fun JournalDetail(
             modifier = Modifier.align(Alignment.End)
         )
     }
+
+    // Dialog Konfirmasi Hapus
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Journal") },
+            text = { Text("Are you sure you want to delete this journal? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    deleteJournal()
+                    showDeleteConfirmation = false
+                }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+fun getCurrentDate(): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return sdf.format(Date())
 }

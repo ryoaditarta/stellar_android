@@ -83,33 +83,41 @@ fun MakeJournalDialog(
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = Color(0xFF2D2D2D),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp) // Increased padding for larger dialog
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(24.dp), // Increase padding inside the dialog
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "Create a Journal",
-                    fontSize = 22.sp,
+                    fontSize = 26.sp, // Increased font size for the title
                     color = Color.White,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 24.dp) // Increased bottom padding
                 )
 
                 // Title input field
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    label = { Text(text = "Title", color = Color(0xFFB286FD)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .height(56.dp), // Increased height for better input experience
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, color = Color.White) // Larger font size for input text
                 )
 
                 // Content input field
                 OutlinedTextField(
                     value = content,
                     onValueChange = { content = it },
-                    label = { Text("Content") },
-                    modifier = Modifier.fillMaxWidth().height(150.dp).padding(bottom = 16.dp),
+                    label = { Text(text = "Content", color = Color(0xFFB286FD)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp) // Increased height for better content input area
+                        .padding(bottom = 24.dp),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, color = Color.White) // Larger font size for content
                 )
 
                 // Save and Cancel buttons
@@ -122,7 +130,7 @@ fun MakeJournalDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Cancel", color = Color.White)
+                        Text("Cancel", color = Color.White, fontSize = 18.sp) // Larger button text
                     }
 
                     Button(
@@ -132,12 +140,13 @@ fun MakeJournalDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB286FD)),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Save", color = Color.White)
+                        Text("Save", color = Color.White, fontSize = 18.sp) // Larger button text
                     }
                 }
             }
         }
     }
+
 }
 
 fun makeJournal(title: String, content: String) {
