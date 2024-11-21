@@ -35,7 +35,7 @@ fun LoginScreen(navController: NavController) {
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color.Black),
     ) {
         Column(
             modifier = Modifier

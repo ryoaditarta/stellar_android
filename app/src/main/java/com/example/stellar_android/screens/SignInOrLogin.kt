@@ -25,7 +25,7 @@ fun SignInOrLoginScreen(navController: NavController) {
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White) // Ensure background is white
+            .background(Color.Black)// Ensure background is white
     ) {
         Column(
             modifier = Modifier
