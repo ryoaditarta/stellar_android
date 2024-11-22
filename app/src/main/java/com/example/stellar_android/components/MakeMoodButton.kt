@@ -17,13 +17,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.example.stellar_android.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.example.stellar_android.components.Typography
 
 @Composable
 fun MakeMoodButton(navController: NavController) {
@@ -49,13 +52,14 @@ fun MakeMoodButton(navController: NavController) {
                 text = "How's Your Mood?",
                 fontSize = 18.sp, // Ukuran teks
                 color = Color.White, // Warna teks
-                modifier = Modifier.weight(1f) // Memberikan ruang agar teks menyesuaikan
+                modifier = Modifier.weight(1f), // Memberikan ruang agar teks menyesuaikan
+                fontFamily = FontFamily(Font(R.font.sregular))
             )
 
             Image(
                 painter = painterResource(id = R.drawable.moon), // Merujuk ikon
                 contentDescription = "Icon", // Deskripsi untuk aksesibilitas
-                modifier = Modifier.size(35.dp) // Ukuran ikon
+                modifier = Modifier.size(40.dp) // Ukuran ikon
             )
         }
     }

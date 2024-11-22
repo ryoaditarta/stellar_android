@@ -58,7 +58,7 @@ fun CardJournal(
                 .size(60.dp) // Icon size
                 .align(Alignment.TopEnd) // Align to the top-right corner
                 .padding(15.dp), // Add padding from the corner
-            tint = Color(0xFFFFFFFF)
+            tint = Color(0xFFD286FD)
         )
 
         Column(modifier = Modifier.padding(start = 16.dp, bottom = 28.dp, top = 16.dp, end = 45.dp).align(Alignment.BottomStart)) {

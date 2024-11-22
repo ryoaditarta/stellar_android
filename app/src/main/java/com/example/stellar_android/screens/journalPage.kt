@@ -7,6 +7,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.stellar_android.components.BottomNavBar
 import com.example.stellar_android.components.CardJournal
@@ -27,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.stellar_android.components.Typography
 
 
 @Composable
@@ -95,28 +103,48 @@ fun journalPage(navController: NavController) {
                     Text(
                         text = "Journals.",
                         color = Color.White,
-                        modifier = Modifier.padding(bottom = 2.dp).align(Alignment.CenterHorizontally),
-                        style = androidx.compose.material3.MaterialTheme.typography.headlineMedium
+                        modifier = Modifier
+                            .padding(bottom = 2.dp)
+                            .align(Alignment.CenterHorizontally),
+                        style = Typography.bodyLarge
                     )
                     Text(
                         text = "What you've written so far",
                         color = Color.White,
-                        modifier = Modifier.padding(bottom = 4.dp).align(Alignment.CenterHorizontally),
-                        style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                        modifier = Modifier
+                            .padding(bottom = 4.dp)
+                            .align(Alignment.CenterHorizontally),
+                        style = Typography.bodySmall
                     )
+                    Spacer(modifier = Modifier.height(32.dp))
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(Color(0xFF2D2D2D), shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)).padding(4.dp)
-                            .clickable{datePickerDialog.show()},
-                        contentAlignment = Alignment.Center,
+                            .fillMaxWidth() // Box mengisi lebar layar
+                            .padding(end = 16.dp), // Tambahkan padding di kanan
+                        contentAlignment = Alignment.CenterEnd // Atur agar konten berada di sisi kanan
                     ) {
-                        Text(
-                            text = selectedDate.value,
-                            color = Color.White,
-                        )
+                        Row(
+                            modifier = Modifier
+                                .background(
+                                    Color(0xFF2D2D2D),
+                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                                )
+                                .clickable { datePickerDialog.show() }
+                                .padding(horizontal = 8.dp, vertical = 4.dp) // Padding dalam Row
+                        ) {
+                            Text(
+                                text = selectedDate.value,
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = "arrowbawah",
+                                tint = Color(0xFFB286DF)
+                            )
+                        }
                     }
+
                     Column(
                         modifier = Modifier.verticalScroll(rememberScrollState())
                     ) {

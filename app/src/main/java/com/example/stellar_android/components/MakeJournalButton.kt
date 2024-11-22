@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,14 +60,15 @@ fun MakeJournalButton(
                 text = "What's your thought?",
                 fontSize = 18.sp, // Ukuran teks
                 color = Color.White, // Warna teks
-                modifier = Modifier.weight(1f) // Memberikan ruang agar teks menyesuaikan
+                modifier = Modifier.weight(1f), // Memberikan ruang agar teks menyesuaikan
+                fontFamily = FontFamily(Font(R.font.sregular))
             )
 
             // Ikon di sebelah kanan
             Image(
                 painter = painterResource(id = R.drawable.plan), // Merujuk ikon
                 contentDescription = "Icon", // Deskripsi untuk aksesibilitas
-                modifier = Modifier.size(35.dp) // Ukuran ikon
+                modifier = Modifier.size(40.dp), // Ukuran ikon
             )
         }
     }

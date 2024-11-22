@@ -13,12 +13,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -57,32 +61,32 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                 .align(Alignment.BottomCenter) // Keep it at the bottom
                 .fillMaxWidth()
                 .padding(0.dp),
-            containerColor = Color(0xFFB286FD) // Ensure it's above the menu
+            containerColor = Color(0xFF191919) // Ensure it's above the menu
         ) {
             NavigationBarItem(
-                selected = false,
+                selected = (currentRoute == "Homepage"),
                 onClick = { navController.navigate("Homepage") },
                 icon = {
-                    // Change icon based on selection state
-                    if (currentRoute == "Homepage") {
-                        Icon(Icons.Default.Home, contentDescription = "Home")
-                    } else {
-                        Icon(Icons.Outlined.Home, contentDescription = "Home")
-                    }
+                    // Change icon color based on selection state
+                    Icon(
+                        imageVector = if (currentRoute == "Homepage") Icons.Default.Home else Icons.Outlined.Home,
+                        contentDescription = "Home",
+                        tint = if (currentRoute == "Homepage") Color(0xFFB286DF) else Color.Gray // Highlight color
+                    )
                 },
                 modifier = Modifier.padding(0.dp)
-//                label = { Text("Home") }
             )
+
             NavigationBarItem(
                 selected = false,
                 onClick = { navController.navigate("journalPage") },
                 icon = {
                     // Change icon based on selection state
-                    if (currentRoute == "journalPage") {
-                        Icon(Icons.Default.Create, contentDescription = "Journal")
-                    } else {
-                        Icon(Icons.Outlined.Create, contentDescription = "Journal")
-                    }
+                    Icon(
+                        imageVector = if (currentRoute == "journalPage") Icons.Default.Create else Icons.Outlined.Create,
+                        contentDescription = "Journal",
+                        tint = if (currentRoute == "journalPage") Color(0xFFB286DF) else Color.Gray // Highlight color
+                    )
                 },
                 modifier = Modifier.padding(0.dp)
 //                label = { Text("Journal") }
@@ -92,7 +96,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                 onClick = { navController.navigate("capturePage") },
                 icon = {
                     Icon(
-                        Icons.Default.AddCircle,
+                        Icons.Outlined.CameraAlt,
                         contentDescription = "Add",
                         modifier = Modifier.size(40.dp)  // Adjust the size of the icon
                     )
@@ -104,11 +108,11 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                 onClick = { navController.navigate("snapsPage") },
                 icon = {
                     // Change icon based on selection state
-                    if (currentRoute == "snapsPage") {
-                        Icon(Icons.Default.PhotoCamera, contentDescription = "Snaps")
-                    } else {
-                        Icon(Icons.Outlined.PhotoCamera, contentDescription = "Snaps")
-                    }
+                    Icon(
+                        imageVector = if (currentRoute == "snapsPage") Icons.Default.Photo else Icons.Outlined.Photo,
+                        contentDescription = "Snap",
+                        tint = if (currentRoute == "snapsPage") Color(0xFFB286DF) else Color.Gray // Highlight color
+                    )
                 },
                 modifier = Modifier.padding(0.dp)
 //                label = { Text("Snaps") }
@@ -118,11 +122,11 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                 onClick = { navController.navigate("profilePage") },
                 icon = {
                     // Change icon based on selection state
-                    if (currentRoute == "profilePage") {
-                        Icon(Icons.Default.AccountBox, contentDescription = "Profile")
-                    } else {
-                        Icon(Icons.Outlined.AccountBox, contentDescription = "Profile")
-                    }
+                    Icon(
+                        imageVector = if (currentRoute == "profilePage") Icons.Default.AccountBox else Icons.Outlined.AccountBox,
+                        contentDescription = "Profile",
+                        tint = if (currentRoute == "profilePage") Color(0xFFB286DF) else Color.Gray // Highlight color
+                    )
                 },
                 modifier = Modifier.padding(0.dp)
 //                label = { Text("Profile") }

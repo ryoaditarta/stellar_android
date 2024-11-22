@@ -1,5 +1,7 @@
 package com.example.stellar_android.screens
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint.Align
 import android.net.Uri
 import android.util.Log
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,9 +38,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -46,10 +56,14 @@ import com.example.stellar_android.R
 import com.example.stellar_android.components.BottomNavBar
 import com.example.stellar_android.components.MakeJournalButton
 import com.example.stellar_android.components.MakeMoodButton
+import com.example.stellar_android.components.Snap
+import com.example.stellar_android.components.SnapRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.example.stellar_android.components.Typography
+import com.google.common.io.Files.append
 
 
 @Composable
@@ -76,7 +90,6 @@ fun Homepage(navController: NavController) {
         }
     }
 
-    // Scaffold dengan Bottom Navigation
     Scaffold(
         bottomBar = {
             BottomNavBar(navController = navController, currentRoute = "Homepage")
@@ -98,17 +111,29 @@ fun Homepage(navController: NavController) {
                     Text(
                         text = "Good day, ${userName.value}!",
                         color = Color.White,
-                        style = androidx.compose.material3.MaterialTheme.typography.headlineMedium
+                        style = Typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(5.dp))
+
                     Text(
-                        text = "Today is ${currentDate.value}. Let's do something good for yourself.",
+                        text = buildAnnotatedString {
+                            append("Today is ")
+                            withStyle(style = SpanStyle(color = Color(0xFFB286FD))) {
+                                append(currentDate.value)
+                            }
+                            append(".")
+                        },
                         color = Color.White,
-                        fontSize = 12.sp,
-                        maxLines = 1,
+                        style = Typography.bodySmall,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Let's do something good for yourself.",
+                        color = Color.White,
+                        style = Typography.bodySmall,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     // Tombol Aksi
                     MakeJournalButton(navController = navController)
@@ -127,7 +152,8 @@ fun Homepage(navController: NavController) {
                         Text(
                             text = "Your Journal",
                             color = Color.White,
-                            style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                            style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
+                            fontFamily = FontFamily(Font(R.font.sregular))
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -144,12 +170,12 @@ fun Homepage(navController: NavController) {
                         Text(
                             text = "Your Snaps",
                             color = Color.White,
-                            style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                            style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
+                            fontFamily = FontFamily(Font(R.font.sregular))
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-
                         // Placeholder untuk fetch journal
-                        FetchAllSnaps(user?.uid ?: "", navController = navController)
+                        FetchAllSnaps(navController = navController)
                     }
                 }
             }
@@ -158,9 +184,69 @@ fun Homepage(navController: NavController) {
 }
 
 @Composable
-fun FetchAllSnaps(UserId: String, navController: NavController){
+fun FetchAllSnaps(navController: NavController) {
+    val snaps = remember { mutableStateOf<List<Snap>>(emptyList()) }
+    val context = LocalContext.current
 
+    // Mengambil data dari SnapRepository
+    LaunchedEffect(Unit) {
+        snaps.value = SnapRepository.getSnaps() // Ambil maksimum 3 Snap
+    }
+
+    if (snaps.value.isEmpty()) {
+        Text(
+            text = "No snaps available.",
+            color = Color.Gray,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    } else {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(snaps.value) { snap ->
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .background(Color.Gray, RoundedCornerShape(8.dp))
+                        .clickable {
+                            navController.navigate("snapDetail/${snap.id}")
+                        }
+                ) {
+                    val bitmap = remember(snap.filePath) { loadBitmapFromFile(snap.filePath) }
+                    if (bitmap != null) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = "Snap Image",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black, RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.DarkGray, RoundedCornerShape(8.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Image not found",
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 }
+
 
 @Composable
 fun FetchAllJournals(userId: String, navController: NavController) {
@@ -201,6 +287,16 @@ fun FetchAllJournals(userId: String, navController: NavController) {
         }
     }
 }
+
+fun loadBitmapFromFile(filePath: String): Bitmap? {
+    return try {
+        BitmapFactory.decodeFile(filePath)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
 
 
 @Composable

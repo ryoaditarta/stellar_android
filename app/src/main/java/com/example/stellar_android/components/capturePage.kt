@@ -35,6 +35,22 @@ import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
@@ -52,10 +68,14 @@ fun capturePage(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val executor: ExecutorService = Executors.newSingleThreadExecutor()
-
+    val judul = rememberSaveable { mutableStateOf("") }
     val snapDao = remember {
         SnapDatabase.getAppDatabase(context).snapDao()
     }
+    val interactionSource = remember { MutableInteractionSource() }
+
+    // Track the pressed state
+    val isPressed = interactionSource.collectIsPressedAsState()
 
     // Initialize the Camera Controller
     val imageCapture = remember { ImageCapture.Builder().build() }
@@ -78,7 +98,7 @@ fun capturePage(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
+        bottomBar = {
             if (capturedBitmap != null) {
                 Row(
                     modifier = Modifier
@@ -88,36 +108,37 @@ fun capturePage(
                 ) {
                     Button(
                         onClick = {
-                            // Save image to database only when Save is pressed
-                            capturedBitmap?.let { bitmap ->
-                                val file = saveBitmapToFile(context, bitmap)
-                                val snap = Snap(
-                                    name = "Captured Image",
-                                    timestamp = System.currentTimeMillis(),
-                                    filePath = file.absolutePath
-                                )
-                                // Save snap to database using DAO
-                                saveSnapToDatabase(snapDao, snap)
-                                bitmapList.add(bitmap)
-                                capturedBitmap = null // Reset captured image
-                                isCameraFrozen = false // Unfreeze camera
-                                navController.navigate("snapsPage")
-                                Toast.makeText(context, "Image saved to database!", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        // Position at top right
-                    ) {
-                        Text("Save")
-                    }
-
-                    Button(
-                        onClick = {
                             capturedBitmap = null // Reset captured image
                             isCameraFrozen = false // Unfreeze camera
                         },
                         // Position at top left
                     ) {
                         Text("Retry")
+                    }
+
+                    Button(
+                        onClick = {
+                            if (judul.value.isNullOrEmpty()) {
+                                Toast.makeText(context, "Please enter a title", Toast.LENGTH_SHORT).show()
+                            } else {
+                                capturedBitmap?.let { bitmap ->
+                                    val file = saveBitmapToFile(context, bitmap)
+                                    val snap = Snap(
+                                        name = judul.value!!, // Use the title provided
+                                        timestamp = System.currentTimeMillis(),
+                                        filePath = file.absolutePath
+                                    )
+                                    saveSnapToDatabase(snapDao, snap)
+                                    bitmapList.add(bitmap)
+                                    capturedBitmap = null
+                                    isCameraFrozen = false
+                                    navController.navigate("snapsPage")
+                                    Toast.makeText(context, "Image saved with title!", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Save")
                     }
                 }
             }
@@ -186,43 +207,113 @@ fun capturePage(
                                 }, ContextCompat.getMainExecutor(context))
                             }
                         )
-                        Button(
-                            onClick = {
-                                // Capture image only if the camera is not frozen
-                                if (!isCameraFrozen) {
-                                    takePicture(
-                                        context = context,
-                                        imageCapture = imageCapture,
-                                        executor = executor,
-                                        onImageCaptured = { bitmap ->
-                                            capturedBitmap = bitmap // Save captured bitmap
-                                            isCameraFrozen = true // Freeze camera
-                                        },
-                                        onError = { error ->
-                                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                                        }
-                                    )
-                                }
-                            },
+                        Row(
                             modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(0.5f),
-                            shape = RoundedCornerShape(8.dp)
+                                .height(120.dp)
+                                .padding(20.dp)
+                                .fillMaxWidth(), // Ensures row stretches across the screen
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically // Centers buttons vertically
                         ) {
-                            Text(if (capturedBitmap == null) "Take Picture" else "Retry")
+
+                            IconButton(
+                                onClick = {
+                                    launcher.launch("image/*")  // Open gallery picker
+                                },
+                                modifier = Modifier
+                                    .size(60.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Photo,
+                                    contentDescription = "Add from Gallery",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
+                            // Camera Shutter Button (centered)
+                            IconButton(
+                                onClick = {
+                                    // Capture image only if the camera is not frozen
+                                    if (!isCameraFrozen) {
+                                        takePicture(
+                                            context = context,
+                                            imageCapture = imageCapture,
+                                            executor = executor,
+                                            onImageCaptured = { bitmap ->
+                                                capturedBitmap = bitmap // Save captured bitmap
+                                                isCameraFrozen = true // Freeze camera
+                                            },
+                                            onError = { error ->
+                                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                            }
+                                        )
+                                    }
+                                },
+                                interactionSource = interactionSource,
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .background(
+                                        Color(0xFFAAAAAA),
+                                        shape = RoundedCornerShape(50.dp)
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Circle,
+                                    contentDescription = "Capture",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(80.dp)
+                                )
+                            }
+
+
+                            IconButton(
+                                onClick = {
+                                    navController.navigate("Homepage")
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Close",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(80.dp)
+                                )
+                            }
                         }
+
+
                     }
 
-                    // Display captured image if camera is frozen
-                    capturedBitmap?.let {
-                        Image(
-                            bitmap = it.asImageBitmap(),
-                            contentDescription = "Captured Image",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                                .background(Color.Gray, RoundedCornerShape(8.dp))
-                        )
+                    capturedBitmap?.let { bitmap ->
+                        Row(modifier = Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // Display captured image
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = "Captured Image",
+                                    modifier = Modifier
+                                        .height(400.dp)
+                                        .background(Color.Gray, RoundedCornerShape(8.dp))
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // TextField for title
+                                TextField(
+                                    value = judul.value ?: "",
+                                    onValueChange = { judul.value = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    label = { Text("Enter Title") },
+                                    singleLine = true
+                                )
+                            }
+                        }
                     }
                 }
             } else {
@@ -231,6 +322,7 @@ fun capturePage(
         }
     }
 }
+
 
 // Helper function to capture the image and convert it to a Bitmap
 // Fungsi untuk memperbaiki orientasi gambar berdasarkan orientasi layar perangkat
