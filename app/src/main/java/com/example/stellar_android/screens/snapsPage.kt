@@ -21,6 +21,7 @@ import com.example.stellar_android.components.BottomNavBar
 import com.example.stellar_android.components.Typography
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -101,6 +102,9 @@ fun snapsPage(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .background(Color.Gray, RoundedCornerShape(8.dp))
+                                            .clickable{
+                                                navController.navigate("snapDetails/${snap.id}")
+                                            }
                                     )
                                 }
                             }

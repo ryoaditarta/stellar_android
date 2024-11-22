@@ -213,7 +213,7 @@ fun FetchAllSnaps(navController: NavController) {
                         .size(150.dp)
                         .background(Color.Gray, RoundedCornerShape(8.dp))
                         .clickable {
-                            navController.navigate("snapDetail/${snap.id}")
+                            navController.navigate("snapDetails/${snap.id}")
                         }
                 ) {
                     val bitmap = remember(snap.filePath) { loadBitmapFromFile(snap.filePath) }

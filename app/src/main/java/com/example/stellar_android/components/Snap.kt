@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "snaps")
 data class Snap(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
+    var name: String,  // Change 'val' to 'var' to allow reassignment
     val timestamp: Long,
     val filePath: String
 )
+

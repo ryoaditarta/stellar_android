@@ -78,7 +78,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
             )
 
             NavigationBarItem(
-                selected = false,
+                selected = (currentRoute == "journalPage"),
                 onClick = { navController.navigate("journalPage") },
                 icon = {
                     // Change icon based on selection state
@@ -104,7 +104,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                 modifier = Modifier.padding(0.dp)
             )
             NavigationBarItem(
-                selected = false,
+                selected = (currentRoute == "snapsPage"),
                 onClick = { navController.navigate("snapsPage") },
                 icon = {
                     // Change icon based on selection state
@@ -118,7 +118,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
 //                label = { Text("Snaps") }
             )
             NavigationBarItem(
-                selected = false,
+                selected = (currentRoute == "profilePage"),
                 onClick = { navController.navigate("profilePage") },
                 icon = {
                     // Change icon based on selection state

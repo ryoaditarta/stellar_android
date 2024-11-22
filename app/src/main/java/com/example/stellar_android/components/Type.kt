@@ -6,6 +6,7 @@ import com.example.stellar_android.R
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val sg = FontFamily(
@@ -24,5 +25,10 @@ val Typography = Typography(
         fontFamily = sg,
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = sg,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
     )
 )

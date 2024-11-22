@@ -25,6 +25,7 @@ import com.example.stellar_android.screens.JournalDetail
 import com.example.stellar_android.components.capturePage
 import com.example.stellar_android.screens.journalPage
 import com.example.stellar_android.screens.profilePage
+import com.example.stellar_android.screens.snapDetails
 import com.google.firebase.firestore.FirebaseFirestore
 import snapsPage
 
@@ -95,7 +96,14 @@ fun StellarNavigation(modifier: Modifier = Modifier) {
                 created_at = created_at,
                 updated_at = updated_at
             )
-
         }
+
+        composable("snapDetails/{snapId}") { backStackEntry ->
+            // Retrieve the snapId from the backStackEntry
+            val snapId = backStackEntry.arguments?.getString("snapId")?.toInt()
+            // Pass the snapId to the snapDetails composable
+            snapDetails(navController = navController, snapId)
+        }
+
     }
 }
