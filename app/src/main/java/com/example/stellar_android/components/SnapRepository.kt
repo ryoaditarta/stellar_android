@@ -1,14 +1,27 @@
 package com.example.stellar_android.components
 
-import com.example.stellar_android.dataclass.Snap
+import android.content.Context
 
-class SnapRepository(private val snapDao: SnapDao) {
+object SnapRepository {
+    private lateinit var database: SnapDatabase
 
-    suspend fun insertSnap(snap: Snap) {
-        snapDao.insert(snap)
+    fun initDatabase(context: Context) {
+        database = SnapDatabase.getAppDatabase(context)
     }
 
-    suspend fun getAllSnaps(): List<Snap> {
-        return snapDao.getAllSnaps()
+    suspend fun getSnaps(): List<Snap> {
+        return database.snapDao().getAllSnaps()
+    }
+
+    suspend fun addSnap(snap: Snap) {
+        database.snapDao().insertSnap(snap)
+    }
+
+    suspend fun deleteSnap(snap: Snap) {
+        database.snapDao().deleteSnap(snap)
+    }
+
+    suspend fun updateSnap(snap: Snap) {
+        database.snapDao().updateSnap(snap)  // New function to update a task
     }
 }

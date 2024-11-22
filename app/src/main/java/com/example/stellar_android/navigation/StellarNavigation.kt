@@ -1,5 +1,6 @@
 package com.example.stellar_android.navigation
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.compose.runtime.Composable
@@ -14,20 +15,36 @@ import com.example.stellar_android.screens.SignInScreen
 import com.example.stellar_android.screens.SignInOrLoginScreen
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.stellar_android.components.Snap
+import com.example.stellar_android.components.SnapRepository
 import com.example.stellar_android.screens.JournalDetail
-import com.example.stellar_android.screens.capturePage
+import com.example.stellar_android.components.capturePage
 import com.example.stellar_android.screens.journalPage
 import com.example.stellar_android.screens.profilePage
-import com.example.stellar_android.screens.snapsPage
 import com.google.firebase.firestore.FirebaseFirestore
+import snapsPage
 
 @Composable
 fun StellarNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val bitmapList = remember { mutableListOf<Bitmap>() }  // Shared mutable list
+    val context = LocalContext.current
 
+    // Inisialisasi database saat navigasi dimulai
+    LaunchedEffect(key1 = Unit) {
+        SnapRepository.initDatabase(context) // Inisialisasi database
+    }
+
+    val snaps = remember { mutableStateOf<List<Snap>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        // Ambil data snap dari repository setelah database diinisialisasi
+        snaps.value = SnapRepository.getSnaps() // Mengambil data snaps dari repository
+    }
 
     // Check if user is logged in when the navigation starts
     LaunchedEffect(key1 = Unit) {
@@ -46,7 +63,18 @@ fun StellarNavigation(modifier: Modifier = Modifier) {
         composable("Homepage") { Homepage(navController) }
         composable("profilePage") { profilePage(navController) }
         composable("journalPage") { journalPage(navController) }
-        composable("snapsPage") { snapsPage(navController, bitmapList = bitmapList) }
+        composable("snapsPage") {
+            // Ambil data snaps dari SnapRepository
+            val snaps = remember { mutableStateOf<List<Snap>>(emptyList()) }
+
+            LaunchedEffect(Unit) {
+                // Ambil data dari SnapRepository dan simpan di snaps
+                snaps.value = SnapRepository.getSnaps()
+            }
+
+            // Kirim data snaps ke composable snapsPage
+            snapsPage(navController, snaps)
+        }
         composable("capturePage"){capturePage(navController, bitmapList = bitmapList)}
         // Updated JournalDetail route to include journalId
         composable(
