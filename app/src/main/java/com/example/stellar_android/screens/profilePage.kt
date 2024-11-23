@@ -1,6 +1,7 @@
 package com.example.stellar_android.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,23 +27,22 @@ import androidx.compose.material.icons.filled.SentimentSatisfied
 import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
 import androidx.compose.material.icons.filled.SentimentVerySatisfied
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontStyle
 
 @Composable
 fun profilePage(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
 
-    // State untuk menyimpan data pengguna
     var userName by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf("") }
     var userMood by remember { mutableStateOf(0.0) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Ambil UID pengguna yang login
     val currentUser = auth.currentUser
     val uid = currentUser?.uid
 
-    // Ambil data pengguna berdasarkan UID
+
     LaunchedEffect(uid) {
         if (uid != null) {
             db.collection("users").document(uid)
@@ -73,76 +74,95 @@ fun profilePage(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = it.calculateBottomPadding())
-                .background(Color.Black),
-            contentAlignment = Alignment.Center // Card di tengah layar
-        ) {
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFFB39DDB), // Ungu pastel terang (lavender)
+                            Color(0xFF9575CD), // Ungu soft medium
+                            Color(0xFF7E57C2)  // Ungu muted gelap
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        )
+        {
             if (isLoading) {
                 CircularProgressIndicator(color = Color.White)
             } else {
                 Card(
                     modifier = Modifier
-                        .width(400.dp) // Lebar Card diperbesar
+                        .width(380.dp)
                         .wrapContentHeight(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2D2D2D))
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E2F)),
+                    elevation = CardDefaults.cardElevation(16.dp) // Shadow lebih tebal
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(24.dp), // Padding dalam diperbesar
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        IconButton(
-                            onClick = {  },
+                        // Profile Picture Section
+                        Box(
                             modifier = Modifier
-                                .size(100.dp) // Ukuran ikon profil lebih besar
+                                .size(120.dp)
                                 .clip(CircleShape)
-                                .background(Color.Gray)
+                                .background(
+                                    Brush.linearGradient(
+                                        listOf(Color(0xFFD286FD), Color(0xFFA774D1))
+                                    )
+                                )
+                                .clickable { /* Aksi untuk unggah foto */ },
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Person,
-                                contentDescription = "Add Profile Photo",
+                                contentDescription = "Profile Icon",
                                 tint = Color.White,
                                 modifier = Modifier.size(60.dp)
                             )
                         }
 
 
-                        // Nama dan Email
+                        // User Name and Email
                         Text(
                             text = userName,
-                            fontSize = 28.sp, // Font lebih besar
+                            fontSize = 28.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = userEmail,
-                            fontSize = 18.sp,
+                            fontSize = 16.sp,
                             color = Color.Gray
                         )
 
-                        // Mood Bar
+                        // Mood Section
                         Text(
                             text = "Today's Mood: ${"%.1f".format(userMood)}%",
-                            fontSize = 20.sp,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
                             color = Color.White
                         )
+
                         Icon(
                             imageVector = getMoodIcon(userMood),
                             contentDescription = "Mood Icon",
                             modifier = Modifier
-                                .size(60.dp) // Ukuran ikon
+                                .size(60.dp)
                                 .padding(bottom = 8.dp),
                             tint = Color.White
                         )
                         LinearProgressIndicator(
-                            progress = userMood.toFloat() / 100f,
+                            progress = { userMood.toFloat() / 100f },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp),
                             color = Color(0xFFD286FD),
-                            trackColor = Color.Gray
+                            trackColor = Color.Gray,
                         )
 
                         // Mood Quote
@@ -153,12 +173,11 @@ fun profilePage(navController: NavController) {
                             fontWeight = FontWeight.Medium
                         )
 
-                        // Tombol Logout
+                        // Logout Button
                         Button(
                             onClick = { logout(navController) },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp),
+                                .fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD286FD))
                         ) {
                             Text(text = "Logout", color = Color.White)
@@ -169,6 +188,7 @@ fun profilePage(navController: NavController) {
         }
     }
 }
+
 
 @Composable
 fun getMoodQuote(mood: Double): String {
