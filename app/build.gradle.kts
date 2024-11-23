@@ -76,6 +76,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.0")
     implementation("androidx.room:room-migration:2.6.0")
     implementation("androidx.camera:camera-lifecycle:1.2.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     kapt("androidx.room:room-compiler:2.6.0")
 
     val camerax_version = "1.5.0-alpha03"

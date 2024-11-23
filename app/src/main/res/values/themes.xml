@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/stellar_purpledot</item>
+        <item name="postSplashScreenTheme">@style/Theme.Stellar_Android</item>
+    </style>
     <style name="Theme.Stellar_Android" parent="android:Theme.Material.Light.NoActionBar" />
     <!-- Base application theme. -->
     <style name="Base.Theme.Stellar_Android" parent="Theme.Material3.DayNight.NoActionBar">

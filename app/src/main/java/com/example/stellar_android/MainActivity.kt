@@ -1,63 +1,56 @@
 package com.example.stellar_android
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.os.Handler
+import android.os.Looper
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import com.example.stellar_android.navigation.StellarNavigation
 import com.example.stellar_android.ui.theme.Stellar_AndroidTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Atur status bar dan navigation bar untuk fullscreen
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        hideSystemBars()
+        // Menggunakan SplashScreen
+        val splashScreen = installSplashScreen()
 
-        setContent {
-            Stellar_AndroidTheme {
-                Scaffold(
-                    containerColor = Color.Black,
-                    modifier = Modifier.background(Color.Black) // Background hitam untuk konsistensi
-                ) { innerPadding ->
-                    StellarNavigation(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    )
+        // Menyesuaikan status bar dan navigation bar
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        // Menyembunyikan ActionBar
+        supportActionBar?.hide()
+
+        // Tunda untuk beberapa detik sebelum melanjutkan ke aktivitas utama
+        splashScreen.setKeepOnScreenCondition { false }
+        Handler(Looper.getMainLooper()).postDelayed({
+            setContent {
+                Stellar_AndroidTheme {
+                    Scaffold(
+                        containerColor = Color.Black,
+                        contentWindowInsets = WindowInsets.systemBars, // Perbaikan padding
+                    ) { innerPadding ->
+                        StellarNavigation(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding) // Sesuaikan padding
+                        )
+                    }
                 }
             }
-        }
+            window.statusBarColor = android.graphics.Color.BLACK // Status bar hitam
+            window.navigationBarColor = android.graphics.Color.BLACK
+        }, 2000) // Tunda selama 2 detik untuk menampilkan splash screen
     }
-
-    private fun hideSystemBars() {
-        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-
-        // Periksa apakah versi Android mendukung API terbaru
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            insetsController.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            insetsController.hide(
-                android.view.WindowInsets.Type.systemBars()
-            )
-        } else {
-            // Gunakan metode lama untuk API di bawah 30
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = (
-                    android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
-                            or android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            or android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    )
-        }
-    }
-
 }

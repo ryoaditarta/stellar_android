@@ -111,7 +111,7 @@ fun JournalDetail(
                 .padding(bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = { navController.navigate("journalPage") }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(imageVector = Icons.Outlined.ArrowBackIosNew, contentDescription = "Back", tint = Color.White)
             }
             Row(
