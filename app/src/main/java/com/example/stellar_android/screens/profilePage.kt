@@ -74,17 +74,10 @@ fun profilePage(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = it.calculateBottomPadding())
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color(0xFFB39DDB), // Ungu pastel terang (lavender)
-                            Color(0xFF9575CD), // Ungu soft medium
-                            Color(0xFF7E57C2)  // Ungu muted gelap
-                        )
-                    )
-                ),
+                .background(Color.Black), // Ubah ke warna hitam
             contentAlignment = Alignment.Center
         )
+
         {
             if (isLoading) {
                 CircularProgressIndicator(color = Color.White)
