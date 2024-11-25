@@ -54,18 +54,19 @@ fun journalPage(navController: NavController) {
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
     fun filterJournals(selectedDateString: String) {
-        val formattedSelectedDate = selectedDateString  // Format the selected date
+        val formattedSelectedDate = selectedDateString
         val filtered = journals.filter { journal ->
             val createdAt = journal["created_at"] as String
             val createdAtFormatted = formatTimestampToDate(createdAt)
-            println(formattedSelectedDate)
-            println(createdAtFormatted)
-            createdAtFormatted == formattedSelectedDate  // Compare only the date part
+            createdAtFormatted == formattedSelectedDate // Compare only the date part
         }
-        // Clear and add to the filtered journals list
-        filteredJournals.clear()
-        filteredJournals.addAll(filtered)
+
+        filteredJournals.clear() // Always clear first
+        if (filtered.isNotEmpty()) {
+            filteredJournals.addAll(filtered) // Only add if there are matches
+        }
     }
+
 
     // DatePickerDialog
     val datePickerDialog = DatePickerDialog(
@@ -162,16 +163,21 @@ fun journalPage(navController: NavController) {
                             )
                         } else {
                             // Display filtered journals or all journals if no date is selected
-                            val journalsToDisplay = if (filteredJournals.isEmpty()) journals else filteredJournals
-                            journalsToDisplay.forEachIndexed { _, journal ->
-                                CardJournal(
-                                    navController = navController,
-                                    title = journal["title"] as? String ?: "No Title",
-                                    content = journal["content"] as? String ?: "No Content",
-                                    created_at = formatTimestamp(journal["created_at"] as? String),
-                                    updated_at = formatTimestamp(journal["updated_at"] as? String),
-                                    journalId = journal["journal_id"] as? String ?: "no id"
-                                )
+                            val journalsToDisplay = filteredJournals
+
+                            if(journalsToDisplay.isEmpty()){
+                                Text("No journal this date")
+                            }else{
+                                journalsToDisplay.forEachIndexed { _, journal ->
+                                    CardJournal(
+                                        navController = navController,
+                                        title = journal["title"] as? String ?: "No Title",
+                                        content = journal["content"] as? String ?: "No Content",
+                                        created_at = formatTimestamp(journal["created_at"] as? String),
+                                        updated_at = formatTimestamp(journal["updated_at"] as? String),
+                                        journalId = journal["journal_id"] as? String ?: "no id"
+                                    )
+                                }
                             }
                         }
                     }

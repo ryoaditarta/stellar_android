@@ -84,7 +84,7 @@ fun snapsPage(
                             // Tampilkan loading jika snaps kosong
                             item {
                                 Text(
-                                    text = "Loading...",
+                                    text = "No Snaps",
                                     color = Color.White,
                                     modifier = Modifier.padding(16.dp)
                                 )

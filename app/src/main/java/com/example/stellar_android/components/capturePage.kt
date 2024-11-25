@@ -87,14 +87,17 @@ fun capturePage(
     var isCameraFrozen by remember { mutableStateOf(false) }
 
     // ActivityResultLauncher to pick an image from the gallery
+    // ActivityResultLauncher to pick an image from the gallery
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             val bitmap = loadBitmapFromUri(context, it)
             bitmap?.let { newBitmap ->
-                bitmapList.add(newBitmap)
+                capturedBitmap = newBitmap // Treat the gallery image like a captured image
+                isCameraFrozen = true      // Freeze the camera
             }
         }
     }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -299,7 +302,6 @@ fun capturePage(
                                         .height(400.dp)
                                         .background(Color.Gray, RoundedCornerShape(8.dp))
                                 )
-
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 // TextField for title
