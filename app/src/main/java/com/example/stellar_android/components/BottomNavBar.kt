@@ -98,7 +98,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                     Icon(
                         Icons.Outlined.CameraAlt,
                         contentDescription = "Add",
-                        modifier = Modifier.size(40.dp)  // Adjust the size of the icon
+                        modifier = Modifier.size(40.dp) // Adjust the size of the icon
                     )
                 },
                 modifier = Modifier.padding(0.dp)
