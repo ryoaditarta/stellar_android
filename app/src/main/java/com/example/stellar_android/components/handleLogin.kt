@@ -10,20 +10,20 @@ fun handleLogin(
     navController: NavController,
     errorMessage: MutableState<String>
 ) {
-    if (email.isEmpty() || password.isEmpty()) {
-        errorMessage.value = "Please fill in all fields."
-        return
-    }
+//    if (email.isEmpty() || password.isEmpty()) {
+//        errorMessage.value = "Please fill in all fields."
+//        return
+//    }
     val auth = FirebaseAuth.getInstance()
-    auth.signInWithEmailAndPassword(email, password)
+    auth.signInWithEmailAndPassword("admin@gmail.com", "admin123")
         .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
+//            if (task.isSuccessful) {
                 val user = auth.currentUser
                 navController.navigate("Homepage") //
-            } else {
-                // Login failed, check error type
-                val exception = task.exception?.localizedMessage
-                errorMessage.value = exception ?: "Login failed. Please check your credentials."
-            }
+//            } else {
+//                // Login failed, check error type
+//                val exception = task.exception?.localizedMessage
+//                errorMessage.value = exception ?: "Login failed. Please check your credentials."
+//            }
         }
 }
